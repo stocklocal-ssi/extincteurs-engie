@@ -925,7 +925,7 @@ let _mgrDefaults = null;
 window.openListManager = function(key) {
   _mgrKey = key;
   _mgrDefaults = key === 'types' ? DEFAULT_TYPES : DEFAULT_CAPS;
-  document.getElementById('listmgr-title').textContent = key === 'types' ? 'Types d'extincteur' : 'Capacités';
+  document.getElementById('listmgr-title').textContent = key === 'types' ? "Types d'extincteur" : 'Capacités';
   document.getElementById('listmgr-input').placeholder = key === 'types' ? 'ex: Eau avec mouillant' : 'ex: 4 kg / 4 L';
   document.getElementById('listmgr-input').value = '';
   renderListMgrItems();
