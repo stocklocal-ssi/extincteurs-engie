@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Extincteurs Engie</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f3;color:#1a1a1a;font-size:15px;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,0.1);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:16px;font-weight:600;}
+.topbar-sub{font-size:12px;color:#888;margin-top:2px;}
+.sync{font-size:12px;color:#888;display:flex;align-items:center;gap:5px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#3b6d11;display:inline-block;}
+.dot.off{background:#e24b4a;}
+.tabs{display:flex;background:#fff;border-bottom:1px solid rgba(0,0,0,0.1);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:11px 14px;font-size:13px;font-weight:500;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 16px;}
+.sc{background:#fff;border-radius:10px;padding:8px 4px;text-align:center;border:1px solid rgba(0,0,0,0.08);}
+.sn{font-size:20px;font-weight:600;}.sn.ok{color:#3b6d11;}.sn.ko{color:#a32d2d;}.sn.w{color:#854f0b;}
+.sl{font-size:10px;color:#888;margin-top:2px;}
+/* CONTROLS */
+.controls{padding:0 16px 8px;display:flex;gap:8px;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:10px 12px 10px 34px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:14px;outline:none;}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:#888;pointer-events:none;}
+.filter-btn{padding:10px 14px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.filter-btn.active{background:#eaf3de;border-color:#639922;color:#3b6d11;}
+.pills{padding:0 16px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.pills::-webkit-scrollbar{display:none;}
+.pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid rgba(0,0,0,0.12);background:#fff;color:#666;-webkit-tap-highlight-color:transparent;}
+.pill.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.expbar{padding:4px 16px 8px;display:flex;gap:8px;justify-content:flex-end;}
+.ebtn{padding:7px 14px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;color:#555;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+/* CARDS */
+.list{padding:0 16px 90px;display:flex;flex-direction:column;gap:8px;}
+.card{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.08);padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.card.ok{border-left:3px solid #639922;}.card.ko{border-left:3px solid #e24b4a;}.card.pending{border-left:3px solid #ef9f27;}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.cnum{font-size:16px;font-weight:500;}.ccode{font-family:monospace;font-size:12px;color:#888;margin-top:2px;}
+.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:500;flex-shrink:0;}
+.b-ok{background:#eaf3de;color:#3b6d11;}.b-ko{background:#fcebeb;color:#a32d2d;}.b-pending{background:#faeeda;color:#854f0b;}
+.cmeta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.mi{font-size:12px;color:#777;}
+.ctag{display:inline-block;margin-top:6px;padding:2px 8px;border-radius:6px;font-size:11px;background:#f0f0ee;color:#555;}
+.cnote{margin-top:8px;font-size:12px;color:#777;font-style:italic;padding-top:8px;border-top:1px solid rgba(0,0,0,0.07);}
+.cby{font-size:11px;color:#bbb;margin-top:5px;}
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:50%;background:#1a1a1a;color:#fff;border:none;font-size:28px;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.2);-webkit-tap-highlight-color:transparent;}
+/* DASHBOARD */
+.dash{padding:12px 16px 90px;}
+.dash-progress{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.08);padding:16px;margin-bottom:12px;}
+.dash-progress h3{font-size:14px;font-weight:600;margin-bottom:12px;}
+.progress-bar{height:12px;background:#f0f0ee;border-radius:6px;overflow:hidden;margin-bottom:6px;}
+.progress-fill{height:100%;border-radius:6px;background:#3b6d11;transition:width 0.5s;}
+.progress-labels{display:flex;justify-content:space-between;font-size:12px;color:#888;}
+.pie-wrap{display:flex;align-items:center;gap:20px;margin-top:16px;}
+.pie-legend{display:flex;flex-direction:column;gap:8px;flex:1;}
+.pie-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+.pie-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.dash-bats{display:flex;flex-direction:column;gap:8px;}
+.bat-card{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.08);padding:14px;}
+.bat-card h4{font-size:14px;font-weight:600;margin-bottom:10px;}
+.bat-bar{height:8px;background:#f0f0ee;border-radius:4px;overflow:hidden;margin-bottom:6px;display:flex;}
+.bat-seg{height:100%;}
+.bat-stats{display:flex;gap:12px;font-size:12px;}
+.bat-stat{display:flex;align-items:center;gap:4px;}
+/* MAP */
+.mapview{padding:12px 16px 90px;}
+.mnav{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+.msel{flex:1;padding:10px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:14px;outline:none;}
+.mbtn{padding:10px 14px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.mbtn.red{background:#fcebeb;border-color:#f7c1c1;color:#a32d2d;}
+.etabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;padding-bottom:2px;}
+.etabs::-webkit-scrollbar{display:none;}
+.etab{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid rgba(0,0,0,0.12);background:#fff;color:#666;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.etab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.etab.add{background:#f0f0ee;color:#888;border-style:dashed;}
+.etab.del{background:#fcebeb;color:#a32d2d;border-color:#f7c1c1;}
+/* MAP LEGEND */
+.map-legend{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.ml-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;background:#fff;padding:4px 10px;border-radius:20px;border:1px solid rgba(0,0,0,0.08);}
+.placing{background:#faeeda;border:1px solid #fac775;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#854f0b;display:flex;justify-content:space-between;align-items:center;}
+.placing button{background:none;border:none;font-size:13px;color:#a32d2d;cursor:pointer;font-weight:500;padding:4px 8px;}
+/* MAP CANVAS */
+.mapwrap{position:relative;background:#e8e8e6;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.08);min-height:300px;touch-action:none;user-select:none;}
+.mapwrap img{width:100%;display:block;pointer-events:none;transform-origin:0 0;}
+.mplaceholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;color:#aaa;font-size:13px;gap:8px;text-align:center;padding:24px;}
+.pin{position:absolute;transform:translate(-50%,-100%);font-size:26px;cursor:pointer;line-height:1;z-index:10;-webkit-tap-highlight-color:transparent;touch-action:none;}
+.pin.moving{opacity:0.6;z-index:20;}
+.pinlabel{position:absolute;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:1px 5px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:11;top:4px;}
+.mhint{font-size:12px;color:#888;margin-top:8px;text-align:center;}
+.muprow{display:flex;gap:8px;margin-top:10px;}
+.mulabel{flex:1;padding:10px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;text-align:center;}
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;overflow-y:auto;padding:20px 16px;-webkit-overflow-scrolling:touch;}
+.overlay.open{display:block;}
+.modal{background:#fff;border-radius:16px;max-width:480px;margin:0 auto;}
+.mhead{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.mhead h2{font-size:17px;font-weight:500;}
+.mclose{width:34px;height:34px;border:none;background:#f0f0ee;border-radius:50%;cursor:pointer;font-size:18px;color:#1a1a1a;-webkit-tap-highlight-color:transparent;}
+.mbody{padding:16px;display:flex;flex-direction:column;gap:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:13px;color:#666;font-weight:500;}
+.field input,.field select,.field textarea{padding:11px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;-webkit-appearance:none;}
+.field textarea{resize:vertical;min-height:70px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sopts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.sopt{padding:10px 4px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;text-align:center;font-size:12px;cursor:pointer;font-weight:500;-webkit-tap-highlight-color:transparent;}
+.sopt.ok{background:#eaf3de;color:#3b6d11;border-color:#c0dd97;}
+.sopt.ko{background:#fcebeb;color:#a32d2d;border-color:#f7c1c1;}
+.sopt.pending{background:#faeeda;color:#854f0b;border-color:#fac775;}
+.sopt.sel{outline:2px solid currentColor;outline-offset:1px;}
+.mfoot{padding:0 16px 20px;display:flex;gap:8px;}
+.btnp{flex:1;padding:13px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;}
+.btnd{padding:13px 16px;background:#fcebeb;color:#a32d2d;border:1px solid #f7c1c1;border-radius:10px;font-size:15px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;}
+.gpsbtn{padding:11px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;}
+.gpsbtn.got{background:#eaf3de;border-color:#c0dd97;color:#3b6d11;}
+.gpsres{font-size:12px;color:#3b6d11;margin-top:4px;}
+.placebtn{padding:11px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;}
+.placebtn.placed{background:#eaf3de;border-color:#c0dd97;color:#3b6d11;}
+.histlist{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;}
+.hitem{font-size:12px;padding:7px 10px;background:#f8f8f6;border-radius:7px;border-left:2px solid #d3d1c7;color:#555;}
+.hitem b{color:#1a1a1a;}.htime{color:#bbb;float:right;}
+.sechead{padding:6px 16px 4px;font-size:11px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2c2c2a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:400;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+.empty{text-align:center;padding:48px 24px;color:#888;font-size:14px;}
+.hidden{display:none!important;}
+.mgrbody{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.mgritem{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f8f8f6;border-radius:8px;}
+.mgritem span{flex:1;font-size:14px;}
+.mgritem button{width:30px;height:30px;border:none;background:#fcebeb;color:#a32d2d;border-radius:6px;cursor:pointer;font-size:18px;line-height:1;-webkit-tap-highlight-color:transparent;}
+.mgrinput{display:flex;gap:8px;}
+.mgrinput input{flex:1;padding:10px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:14px;outline:none;font-family:inherit;}
+.mgrinput button{padding:10px 16px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+/* ZOOM controls */
+.zoom-controls{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:4px;z-index:15;}
+.zoom-btn{width:32px;height:32px;background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.15);border-radius:6px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+/* 3D ISO */
+.iso-floor{width:85%;max-width:320px;margin:0 auto;cursor:pointer;transition:transform 0.2s,opacity 0.2s;-webkit-tap-highlight-color:transparent;}
+.iso-floor:hover{transform:translateY(-4px);}
+.iso-floor.active-floor{transform:translateY(-8px);}
+.iso-floor-inner{border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,0.15);box-shadow:0 4px 20px rgba(0,0,0,0.5);position:relative;}
+.iso-floor-inner img{width:100%;display:block;opacity:0.85;filter:brightness(0.8);}
+.iso-floor-inner.active-fl img{opacity:1;filter:brightness(1);}
+.iso-floor-label{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);color:#fff;font-size:13px;font-weight:600;letter-spacing:0.5px;}
+.iso-floor-label.active-fl{background:rgba(26,26,46,0.5);}
+.iso-floor-stats{position:absolute;top:6px;right:8px;display:flex;gap:4px;font-size:11px;}
+.iso-connector{width:2px;height:16px;background:rgba(255,255,255,0.15);margin:0 auto;}
+.iso-floor-placeholder{width:100%;height:70px;background:rgba(255,255,255,0.05);border-radius:8px;border:2px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:12px;}
+/* Transition ascenseur */
+.elevator-enter{animation:elevatorUp 0.4s cubic-bezier(0.4,0,0.2,1);}
+.elevator-exit{animation:elevatorDown 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes elevatorUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+@keyframes elevatorDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-40px);}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><div class="topbar-title">🔴 Extincteurs Engie</div><div class="topbar-sub" id="tsub">Engie</div></div>
+  <div class="sync"><span class="dot" id="sdot"></span><span id="stxt">Sync…</span></div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="list">📋 Liste</div>
+  <div class="tab" data-tab="dash">📊 Dashboard</div>
+  <div class="tab" data-tab="map">🗺️ Plan</div>
+  <div class="tab" data-tab="alerts">🔔 Alertes</div>
+</div>
+
+<!-- LIST TAB -->
+<div id="tab-list">
+  <div class="stats">
+    <div class="sc"><div class="sn" id="s-total">—</div><div class="sl">Total</div></div>
+    <div class="sc"><div class="sn ok" id="s-ok">—</div><div class="sl">Conformes</div></div>
+    <div class="sc"><div class="sn ko" id="s-ko">—</div><div class="sl">Non-conf.</div></div>
+    <div class="sc"><div class="sn w" id="s-pend">—</div><div class="sl">À vérifier</div></div>
+  </div>
+  <div class="controls">
+    <div class="search-wrap"><span class="si">🔍</span><input type="text" id="search" placeholder="N°, code, emplacement…"></div>
+    <button class="filter-btn" id="filterbtn">Filtres</button>
+  </div>
+  <div class="pills hidden" id="pills">
+    <span class="pill active" data-f="all">Tous</span>
+    <span class="pill" data-f="ok">✅ Conformes</span>
+    <span class="pill" data-f="ko">❌ Non-conf.</span>
+    <span class="pill" data-f="pending">🟡 À vérifier</span>
+    <span class="pill" data-f="eau">Eau</span>
+    <span class="pill" data-f="co2">CO₂</span>
+    <span class="pill" data-f="poudre">Poudre</span>
+    <span class="pill" data-f="mousse">Mousse</span>
+  </div>
+  <div class="expbar">
+    <button class="ebtn" id="btncsv">⬇ CSV</button>
+    <button class="ebtn" id="btnpdf">📄 PDF</button>
+  </div>
+  <div class="list" id="extlist"><div class="empty">Chargement…</div></div>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div id="tab-dash" class="hidden">
+  <div class="dash">
+    <!-- Progress -->
+    <div class="dash-progress">
+      <h3>📊 Avancement de la campagne</h3>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-labels"><span id="prog-label">0 contrôlés</span><span id="prog-pct">0%</span></div>
+      <!-- Pie chart -->
+      <div class="pie-wrap">
+        <canvas id="piecanvas" width="120" height="120"></canvas>
+        <div class="pie-legend" id="pielegend"></div>
+      </div>
+    </div>
+    <!-- Par bâtiment -->
+    <div style="font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding:0 2px">🏢 Par bâtiment</div>
+    <div class="dash-bats" id="dashbats"></div>
+  </div>
+</div>
+
+<!-- MAP TAB -->
+<div id="tab-map" class="hidden">
+  <div class="mapview">
+    <div class="mnav">
+      <select class="msel" id="batsel"><option value="">— Bâtiment —</option></select>
+      <button class="mbtn" id="addbat">＋ Bât.</button>
+      <button class="mbtn red hidden" id="delbat">🗑</button>
+      <button class="mbtn" id="toggle3d" style="display:none">🏢 3D</button>
+    </div>
+    <div class="etabs" id="etabs"></div>
+    <div class="map-legend" id="maplegend"></div>
+    <div class="placing hidden" id="placingtop">
+      <span>📍 Touchez le plan pour placer <strong id="placingname"></strong></span>
+      <button id="cancplacing">Annuler</button>
+    </div>
+
+    <!-- VUE 3D ISOMETRIQUE -->
+    <div id="view3d" class="hidden" style="background:#1a1a2e;border-radius:12px;overflow:hidden;min-height:360px;position:relative;padding:20px 10px 30px;">
+      <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:12px">Vue 3D — Touchez un étage pour y aller</div>
+      <div id="iso-stack" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:0;"></div>
+    </div>
+
+    <!-- VUE NORMALE -->
+    <div id="viewnormal">
+      <div class="mapwrap" id="mapwrap">
+        <div class="mplaceholder" id="mapph"><span style="font-size:40px">🗺️</span><p>Créez un bâtiment et un étage,<br>puis uploadez un plan PNG.</p></div>
+        <img id="mapimg" class="hidden" draggable="false">
+        <div id="pins"></div>
+        <div class="zoom-controls hidden" id="zoomctrl">
+          <button class="zoom-btn" id="zoomin">＋</button>
+          <button class="zoom-btn" id="zoomout">−</button>
+          <button class="zoom-btn" id="zoomreset" style="font-size:12px">↺</button>
+        </div>
+      </div>
+      <div class="mhint" id="mhint"></div>
+      <div class="muprow hidden" id="muprow">
+        <label class="mulabel">📁 Changer le plan<input type="file" accept="image/*" id="planfile" style="display:none"></label>
+        <button class="mbtn red" id="delplan">🗑 Plan</button>
+      </div>
+      <div class="hidden" id="mupfirst" style="margin-top:10px">
+        <label class="mulabel" style="display:block;text-align:center">📁 Uploader un plan PNG<input type="file" accept="image/*" id="planfilefirst" style="display:none"></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTS TAB -->
+<div id="tab-alerts" class="hidden">
+  <div class="list" id="alertslist" style="padding-top:12px"><div class="empty">Chargement…</div></div>
+</div>
+
+<button class="fab" id="fab">＋</button>
+
+<!-- EXT MODAL -->
+<div class="overlay" id="extoverlay">
+  <div class="modal">
+    <div class="mhead"><h2 id="modaltitle">Nouvel extincteur</h2><button class="mclose" id="modalclose">✕</button></div>
+    <div class="mbody">
+      <div class="frow">
+        <div class="field"><label>Numéro *</label><input id="f-num" type="text" placeholder="EX-042"></div>
+        <div class="field"><label>Code</label><input id="f-code" type="text" placeholder="B-RDC-04"></div>
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <div style="display:flex;gap:6px">
+          <select id="f-type" style="flex:1"></select>
+          <button class="mbtn" id="mgrtypes" style="padding:0 12px;font-size:16px">⚙️</button>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Bâtiment</label><input id="f-bat" type="text" placeholder="Bât. A"></div>
+        <div class="field"><label>Étage</label><input id="f-eta" type="text" placeholder="RDC, R+1…"></div>
+      </div>
+      <div class="field"><label>Emplacement précis</label><input id="f-loc" type="text" placeholder="Couloir est, ascenseur…"></div>
+      <div class="field">
+        <label>📍 GPS (extérieur)</label>
+        <button class="gpsbtn" id="gpsbtn">📡 Capturer ma position GPS</button>
+        <div class="gpsres hidden" id="gpsres"></div>
+      </div>
+      <div class="field">
+        <label>🗺️ Position sur le plan</label>
+        <button class="placebtn" id="placebtn">📌 Placer sur le plan</button>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Date fabrication</label><input id="f-fab" type="month"></div>
+        <div class="field"><label>Prochaine vérif.</label><input id="f-verif" type="month"></div>
+      </div>
+      <div class="field">
+        <label>Capacité</label>
+        <div style="display:flex;gap:6px">
+          <select id="f-cap" style="flex:1"></select>
+          <button class="mbtn" id="mgrcaps" style="padding:0 12px;font-size:16px">⚙️</button>
+        </div>
+      </div>
+      <div class="field"><label>Contrôleur</label><input id="f-ctrl" type="text" placeholder="Prénom…"></div>
+      <div class="field">
+        <label>Statut</label>
+        <div class="sopts">
+          <div class="sopt pending sel" data-v="pending">🟡 À vérifier</div>
+          <div class="sopt ok" data-v="ok">✅ Conforme</div>
+          <div class="sopt ko" data-v="ko">❌ Non-conf.</div>
+        </div>
+      </div>
+      <div class="field"><label>Observations</label><textarea id="f-notes" placeholder="Manomètre, dommages, remarques…"></textarea></div>
+      <div class="field hidden" id="histsec"><label>Historique</label><div class="histlist" id="histlist"></div></div>
+    </div>
+    <div class="mfoot">
+      <button class="btnd hidden" id="delbtn">🗑 Supprimer</button>
+      <button class="btnp" id="savebtn">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="confirmoverlay">
+  <div class="modal" style="max-width:320px;margin-top:30vh">
+    <div class="mhead" style="padding-bottom:12px"><h2 id="confirmtitle" style="font-size:16px">Confirmer</h2></div>
+    <div style="padding:0 16px 16px;font-size:14px;color:#555" id="confirmmsg"></div>
+    <div class="mfoot">
+      <button class="btnd" id="confirmyes">Supprimer</button>
+      <button class="btnp" id="confirmno">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIST MANAGER MODAL -->
+<div class="overlay" id="mgroverlay">
+  <div class="modal">
+    <div class="mhead"><h2 id="mgrtitle">Gérer</h2><button class="mclose" id="mgrclose">✕</button></div>
+    <div class="mgrbody">
+      <div id="mgritems"></div>
+      <div class="mgrinput"><input id="mgrinput" type="text" placeholder="Nouveau…"><button id="mgraddbtn">＋</button></div>
+    </div>
+    <div class="mfoot"><button class="btnp" id="mgrdonebtn">Fermer</button></div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div class="overlay" id="pdfoverlay">
+  <div class="modal">
+    <div class="mhead"><h2>📄 Rapport PDF</h2><button class="mclose" id="pdfclose">✕</button></div>
+    <div class="mbody">
+      <div class="field"><label>Nom du site</label><input id="pdf-site" type="text" value="Site Storengy — La Ciotat"></div>
+      <div class="field"><label>Responsable / Signataire</label><input id="pdf-sign" type="text" placeholder="Nom Prénom"></div>
+      <div class="field"><label>Inclure dans le rapport</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400"><input type="checkbox" id="pdf-all" checked> Tous les extincteurs</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400"><input type="checkbox" id="pdf-ko"> Seulement non-conformes</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400"><input type="checkbox" id="pdf-exp"> Seulement échéances proches</label>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btnp" id="pdfgenbtn">Générer le PDF</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCrlzeK9hsx4riRZ38ReZdztesLj44w_yg",
+  authDomain:"extincteur-e0576.firebaseapp.com",
+  projectId:"extincteur-e0576",
+  storageBucket:"extincteur-e0576.firebasestorage.app",
+  messagingSenderId:"845121233941",
+  appId:"1:845121233941:web:14eef399b05b814e4c5a1c"
+});
+var db=firebase.firestore();
+
+// ── STATE ─────────────────────────────────────────────────
+var allData=[],curFilter='all',curSearch='',editingId=null,curStatus='pending',curGPS=null;
+var placingId=null,movingId=null,curBat='',curEtage='';
+var mapStructure={};
+var mapPlans={},confirmCb=null,mgrKey=null;
+var mapStructureLoaded=false;
+var mapZoom=1,mapOffX=0,mapOffY=0;
+var pinchStartDist=0,pinchStartZoom=1;
+var DEFAULT_TYPES=['Eau pulvérisée','Eau + additif','CO₂','Poudre ABC','Poudre BC','Mousse AFFF','Halon substitut'];
+var DEFAULT_CAPS=['1 kg / 1 L','2 kg / 2 L','3 kg / 3 L','6 kg / 6 L','9 kg / 9 L','12 kg / 12 L','50 kg / 50 L'];
+
+// ── HELPERS ───────────────────────────────────────────────
+function $(id){return document.getElementById(id);}
+function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function statusLabel(s){return s==='ok'?'Conforme':s==='ko'?'Non-conf.':'À vérifier';}
+function fmtMonth(m){if(!m)return'';var p=m.split('-');return['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][parseInt(p[1])-1]+' '+p[0];}
+function fmtDate(iso){if(!iso)return'';var d=new Date(iso);return d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+function expiring(v){if(!v)return false;var d=new Date(v+'-01'),now=new Date();var diff=(d-now)/86400000;return diff>=0&&diff<=90;}
+function expired(v){if(!v)return false;return new Date(v+'-01')<new Date();}
+function saveStruct(){
+  db.collection('config').doc('mapStructure').set({data:JSON.stringify(mapStructure)})
+    .catch(function(err){console.error('saveStruct error',err);});
+}
+function planKey(b,e){return b+'||'+e;}
+function loadPlan(b,e){var k=planKey(b,e);return mapPlans[k]||null;}
+function savePlan(b,e,dataUrl,cb){
+  var k=planKey(b,e);
+  mapPlans[k]=dataUrl;
+  // Compress if needed then store
+  var docId=btoa(unescape(encodeURIComponent(k))).replace(/[^a-zA-Z0-9]/g,'').substring(0,100);
+  db.collection('plans').doc(docId).set({bat:b,etage:e,key:k,data:dataUrl})
+    .then(function(){if(cb)cb();})
+    .catch(function(err){toast('Plan trop lourd — essayez une image plus petite');console.error(err);});
+}
+function delPlan(b,e){
+  var k=planKey(b,e);
+  delete mapPlans[k];
+  var docId=btoa(unescape(encodeURIComponent(k))).replace(/[^a-zA-Z0-9]/g,'').substring(0,100);
+  db.collection('plans').doc(docId).delete().catch(function(err){console.error(err);});
+}
+function getList(k,def){try{var s=localStorage.getItem('lst_'+k);return s?JSON.parse(s):[].concat(def);}catch(e){return[].concat(def);}}
+function saveList(k,arr){localStorage.setItem('lst_'+k,JSON.stringify(arr));}
+function confirm2(msg,cb){$('confirmmsg').textContent=msg;$('confirmoverlay').classList.add('open');confirmCb=cb;}
+function populateSel(id,key,def,cur){var sel=$(id),items=getList(key,def);sel.innerHTML='<option value="">— Sélectionner —</option>'+items.map(function(i){return'<option'+(i===cur?' selected':'')+'>'+i+'</option>';}).join('');}
+
+// ── SYNC ──────────────────────────────────────────────────
+$('sdot').className='dot';$('stxt').textContent='Synchronisé';
+db.collection('extincteurs').orderBy('num').onSnapshot(function(snap){
+  allData=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+  renderList();renderAlerts();renderDash();
+  if(curBat&&curEtage){renderPins();renderMapLegend();if(is3D)renderIsoView();}
+},function(){$('sdot').className='dot off';$('stxt').textContent='Hors ligne';});
+
+// Sync map structure from Firebase
+db.collection('config').doc('mapStructure').onSnapshot(function(doc){
+  if(doc.exists){
+    try{ mapStructure=JSON.parse(doc.data().data||'{}'); }catch(e){ mapStructure={}; }
+  } else { mapStructure={}; }
+  mapStructureLoaded=true;
+  if($('tab-map')&&!$('tab-map').classList.contains('hidden')) renderMapUI();
+});
+
+// Sync plans from Firebase
+db.collection('plans').onSnapshot(function(snap){
+  snap.docs.forEach(function(d){
+    var dat=d.data();
+    if(dat.key&&dat.data) mapPlans[dat.key]=dat.data;
+  });
+  if(curBat&&curEtage) renderMapCanvas();
+  if(is3D) renderIsoView();
+});
+
+// ── TABS ──────────────────────────────────────────────────
+$('tabs').addEventListener('click',function(e){
+  var tab=e.target.closest('[data-tab]');if(!tab)return;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  tab.classList.add('active');
+  ['list','dash','map','alerts'].forEach(function(t){
+    var el=$('tab-'+t);
+    if(t===tab.dataset.tab)el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+  if(tab.dataset.tab==='map')renderMapUI();
+  if(tab.dataset.tab==='dash')renderDash();
+});
+
+// ── LIST ──────────────────────────────────────────────────
+function renderList(){
+  var el=$('extlist');
+  var data=allData.filter(function(e){
+    if(curSearch){var q=curSearch.toLowerCase();if(!(e.num||'').toLowerCase().includes(q)&&!(e.code||'').toLowerCase().includes(q)&&!(e.loc||'').toLowerCase().includes(q)&&!(e.batiment||'').toLowerCase().includes(q))return false;}
+    if(curFilter!=='all'){var tfs=['eau','co2','poudre','mousse'];if(tfs.indexOf(curFilter)>=0){if(!(e.type||'').toLowerCase().includes(curFilter==='co2'?'co':curFilter))return false;}else{if(e.status!==curFilter)return false;}}
+    return true;
+  });
+  $('s-total').textContent=allData.length;
+  $('s-ok').textContent=allData.filter(function(e){return e.status==='ok';}).length;
+  $('s-ko').textContent=allData.filter(function(e){return e.status==='ko';}).length;
+  $('s-pend').textContent=allData.filter(function(e){return!e.status||e.status==='pending';}).length;
+  if(!data.length){el.innerHTML='<div class="empty">Aucun extincteur.<br>Appuyez sur + pour en ajouter.</div>';return;}
+  el.innerHTML=data.map(function(e){
+    var exp=expiring(e.verif)||expired(e.verif);
+    return'<div class="card '+(e.status||'pending')+'" data-id="'+e.id+'">'+
+      '<div class="ctop"><div><div class="cnum">'+(e.num||'—')+(exp?' <span style="font-size:10px;background:#faeeda;color:#854f0b;padding:2px 6px;border-radius:10px">⚠️</span>':'')+'</div><div class="ccode">'+(e.code||'')+'</div></div>'+
+      '<span class="badge b-'+(e.status||'pending')+'">'+statusLabel(e.status)+'</span></div>'+
+      '<div class="cmeta">'+
+      (e.batiment?'<span class="mi">🏢 '+e.batiment+(e.etage?' · '+e.etage:'')+'</span>':'')+
+      (e.loc?'<span class="mi">📍 '+e.loc+'</span>':'')+
+      (e.verif?'<span class="mi">📅 '+fmtMonth(e.verif)+'</span>':'')+
+      (e.gps?'<span class="mi"><a href="https://maps.google.com/?q='+e.gps.lat+','+e.gps.lng+'" target="_blank" style="color:#185fa5;text-decoration:none">🌍 GPS</a></span>':'')+
+      '</div>'+
+      (e.type?'<span class="ctag">'+e.type+(e.capacite?' · '+e.capacite:'')+'</span>':'')+
+      (e.notes?'<div class="cnote">'+e.notes+'</div>':'')+
+      (e.controller?'<div class="cby">Par '+e.controller+'</div>':'')+
+      '</div>';
+  }).join('');
+}
+$('extlist').addEventListener('click',function(e){var c=e.target.closest('[data-id]');if(c)openModal(c.dataset.id);});
+$('alertslist').addEventListener('click',function(e){var c=e.target.closest('[data-id]');if(c)openModal(c.dataset.id);});
+$('search').addEventListener('input',function(){curSearch=this.value;renderList();});
+$('filterbtn').addEventListener('click',function(){var p=$('pills');var show=p.classList.contains('hidden');p.classList.toggle('hidden',!show);this.classList.toggle('active',show);});
+$('pills').addEventListener('click',function(e){var pill=e.target.closest('[data-f]');if(!pill)return;curFilter=pill.dataset.f;document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});pill.classList.add('active');renderList();});
+
+// ── ALERTS ────────────────────────────────────────────────
+function renderAlerts(){
+  var el=$('alertslist');
+  var exp=allData.filter(function(e){return expiring(e.verif)||expired(e.verif);});
+  var ko=allData.filter(function(e){return e.status==='ko';});
+  var html='';
+  if(exp.length){html+='<div class="sechead">⚠️ Échéances proches / dépassées</div>';html+=exp.map(function(e){return'<div class="card pending" data-id="'+e.id+'"><div class="ctop"><div><div class="cnum">'+e.num+'</div><div class="ccode">'+(e.code||'')+'</div></div><span class="badge b-pending">📅 '+fmtMonth(e.verif)+'</span></div></div>';}).join('');}
+  if(ko.length){html+='<div class="sechead" style="margin-top:8px">❌ Non-conformes</div>';html+=ko.map(function(e){return'<div class="card ko" data-id="'+e.id+'"><div class="ctop"><div><div class="cnum">'+e.num+'</div><div class="ccode">'+(e.code||'')+'</div></div><span class="badge b-ko">Non-conf.</span></div>'+(e.notes?'<div class="cnote">'+e.notes+'</div>':'')+'</div>';}).join('');}
+  if(!exp.length&&!ko.length)html='<div class="empty">✅ Aucune alerte !</div>';
+  el.innerHTML=html;
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────
+function renderDash(){
+  var total=allData.length;
+  var ok=allData.filter(function(e){return e.status==='ok';}).length;
+  var ko=allData.filter(function(e){return e.status==='ko';}).length;
+  var pend=allData.filter(function(e){return!e.status||e.status==='pending';}).length;
+  var controlled=ok+ko;
+  var pct=total?Math.round(controlled/total*100):0;
+  $('prog-fill').style.width=pct+'%';
+  $('prog-label').textContent=controlled+' / '+total+' contrôlés';
+  $('prog-pct').textContent=pct+'%';
+  // Pie chart
+  var canvas=$('piecanvas');
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,120,120);
+  var slices=[{v:ok,c:'#639922'},{v:ko,c:'#e24b4a'},{v:pend,c:'#ef9f27'}];
+  var start=0,cx=60,cy=60,r=50;
+  if(total===0){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#f0f0ee';ctx.fill();}
+  else{slices.forEach(function(s){if(!s.v)return;var angle=(s.v/total)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();ctx.fillStyle=s.c;ctx.fill();start+=angle;});}
+  $('pielegend').innerHTML=[
+    {v:ok,c:'#639922',l:'Conformes'},
+    {v:ko,c:'#e24b4a',l:'Non-conf.'},
+    {v:pend,c:'#ef9f27',l:'À vérifier'}
+  ].map(function(s){
+    return'<div class="pie-item"><div class="pie-dot" style="background:'+s.c+'"></div><span>'+s.l+' <strong>'+s.v+'</strong></span></div>';
+  }).join('');
+  // Par bâtiment
+  var bats={};
+  allData.forEach(function(e){
+    var b=e.batiment||'Sans bâtiment';
+    if(!bats[b])bats[b]={ok:0,ko:0,pend:0,total:0};
+    bats[b].total++;
+    if(e.status==='ok')bats[b].ok++;
+    else if(e.status==='ko')bats[b].ko++;
+    else bats[b].pend++;
+  });
+  var batKeys=Object.keys(bats).sort();
+  $('dashbats').innerHTML=batKeys.length?batKeys.map(function(b){
+    var s=bats[b];
+    var pok=s.total?Math.round(s.ok/s.total*100):0;
+    return'<div class="bat-card">'+
+      '<h4>🏢 '+b+' <span style="font-size:12px;font-weight:400;color:#888">('+s.total+' extincteurs)</span></h4>'+
+      '<div class="bat-bar">'+
+        (s.ok?'<div class="bat-seg" style="width:'+(s.ok/s.total*100)+'%;background:#639922"></div>':'')+
+        (s.ko?'<div class="bat-seg" style="width:'+(s.ko/s.total*100)+'%;background:#e24b4a"></div>':'')+
+        (s.pend?'<div class="bat-seg" style="width:'+(s.pend/s.total*100)+'%;background:#ef9f27"></div>':'')+
+      '</div>'+
+      '<div class="bat-stats">'+
+        '<span class="bat-stat" style="color:#3b6d11">✅ '+s.ok+'</span>'+
+        '<span class="bat-stat" style="color:#a32d2d">❌ '+s.ko+'</span>'+
+        '<span class="bat-stat" style="color:#854f0b">🟡 '+s.pend+'</span>'+
+        '<span class="bat-stat" style="color:#888;margin-left:auto">'+pok+'% conformes</span>'+
+      '</div></div>';
+  }).join(''):'<div class="empty" style="padding:24px">Aucun extincteur renseigné</div>';
+}
+
+// ── MAP ───────────────────────────────────────────────────
+function renderMapUI(){
+  var bats=Object.keys(mapStructure).sort();
+  var sel=$('batsel');
+  sel.innerHTML='<option value="">— Bâtiment —</option>'+bats.map(function(b){return'<option'+(b===curBat?' selected':'')+'>'+b+'</option>';}).join('');
+  $('delbat').classList.toggle('hidden',!curBat);
+  $('toggle3d').style.display=curBat?'block':'none';
+  renderEtabs();renderMapCanvas();
+}
+function renderEtabs(){
+  var c=$('etabs');if(!curBat){c.innerHTML='';return;}
+  var etages=mapStructure[curBat]||[];
+  c.innerHTML=etages.map(function(e){return'<div class="etab'+(e===curEtage?' active':'')+'" data-etage="'+e+'">'+e+'</div>';}).join('')+
+    '<div class="etab add" id="addetage">＋ Étage</div>'+
+    (curEtage?'<div class="etab del" id="deletage">🗑 '+curEtage+'</div>':'');
+  c.addEventListener('click',etabClick);
+}
+function etabClick(e){
+  var et=e.target.closest('[data-etage]');
+  if(et){curEtage=et.dataset.etage;mapZoom=1;mapOffX=0;mapOffY=0;renderEtabs();renderMapCanvas();return;}
+  if(e.target.id==='addetage'){promptAddEtage();return;}
+  if(e.target.id==='deletage'){doDeleteEtage();return;}
+}
+function renderMapLegend(){
+  var lg=$('maplegend');
+  if(!curBat||!curEtage){lg.innerHTML='';return;}
+  var exts=allData.filter(function(e){return e.batiment===curBat&&e.etage===curEtage;});
+  var ok=exts.filter(function(e){return e.status==='ok';}).length;
+  var ko=exts.filter(function(e){return e.status==='ko';}).length;
+  var pend=exts.filter(function(e){return!e.status||e.status==='pending';}).length;
+  lg.innerHTML='<div class="ml-item">🟢 '+ok+'</div><div class="ml-item">🔴 '+ko+'</div><div class="ml-item">🟡 '+pend+'</div><div class="ml-item" style="color:#888">Total : '+exts.length+'</div>';
+}
+function renderMapCanvas(){
+  var img=$('mapimg'),ph=$('mapph'),uprow=$('muprow'),upfirst=$('mupfirst'),hint=$('mhint'),zc=$('zoomctrl');
+  $('pins').innerHTML='';
+  if(!curBat||!curEtage){
+    img.classList.add('hidden');ph.style.display='flex';
+    ph.innerHTML='<span style="font-size:40px">🗺️</span><p>Sélectionnez ou créez un bâtiment<br>puis choisissez un étage.</p>';
+    uprow.classList.add('hidden');upfirst.classList.add('hidden');hint.textContent='';zc.classList.add('hidden');
+    $('maplegend').innerHTML='';return;
+  }
+  var plan=loadPlan(curBat,curEtage);
+  if(plan){
+    img.src=plan;img.classList.remove('hidden');ph.style.display='none';
+    uprow.classList.remove('hidden');upfirst.classList.add('hidden');zc.classList.remove('hidden');
+    hint.textContent=placingId?'📍 Touchez le plan pour placer':'🔄 Appui long sur une punaise pour la déplacer';
+    applyZoom();renderPins();renderMapLegend();
+  } else {
+    img.classList.add('hidden');ph.style.display='flex';
+    ph.innerHTML='<span style="font-size:40px">🗺️</span><p><strong>'+curBat+' — '+curEtage+'</strong><br>Aucun plan uploadé.</p>';
+    uprow.classList.add('hidden');upfirst.classList.remove('hidden');hint.textContent='';zc.classList.add('hidden');
+    $('maplegend').innerHTML='';
+  }
+}
+function applyZoom(){
+  var img=$('mapimg');
+  img.style.transform='translate('+mapOffX+'px,'+mapOffY+'px) scale('+mapZoom+')';
+  img.style.transformOrigin='0 0';
+}
+function renderPins(){
+  var c=$('pins');
+  var exts=allData.filter(function(e){return e.batiment===curBat&&e.etage===curEtage&&e.mapPos;});
+  c.innerHTML=exts.map(function(e){
+    var x=(e.mapPos.x*100).toFixed(2),y=(e.mapPos.y*100).toFixed(2);
+    var em=e.status==='ok'?'🟢':e.status==='ko'?'🔴':'🟡';
+    return'<div class="pin" style="left:'+x+'%;top:'+y+'%" data-id="'+e.id+'" data-pin="1">'+em+'<div class="pinlabel">'+e.num+'</div></div>';
+  }).join('');
+}
+
+// Map interactions
+var mapTouchStart=null,mapTouchMoved=false;
+$('mapwrap').addEventListener('touchstart',function(e){
+  if(e.touches.length===2){
+    pinchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    pinchStartZoom=mapZoom;return;
+  }
+  mapTouchStart={x:e.touches[0].clientX,y:e.touches[0].clientY,time:Date.now()};
+  mapTouchMoved=false;
+},{passive:true});
+
+$('mapwrap').addEventListener('touchmove',function(e){
+  if(e.touches.length===2){
+    var dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    mapZoom=Math.min(5,Math.max(1,pinchStartZoom*(dist/pinchStartDist)));
+    applyZoom();e.preventDefault();return;
+  }
+  mapTouchMoved=true;
+},{passive:false});
+
+$('mapwrap').addEventListener('click',function(e){
+  if(mapTouchMoved)return;
+  var pin=e.target.closest('[data-pin]');
+  if(pin){openModal(pin.dataset.id);return;}
+  if(!placingId)return;
+  var img=$('mapimg');if(img.classList.contains('hidden'))return;
+  var rect=img.getBoundingClientRect();
+  var x=(e.clientX-rect.left)/(rect.width);
+  var y=(e.clientY-rect.top)/(rect.height);
+  x=Math.max(0,Math.min(1,x));y=Math.max(0,Math.min(1,y));
+  db.collection('extincteurs').doc(placingId).update({mapPos:{x:x,y:y},updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(function(){cancelPlacing();toast('Punaise placée ✅');renderPins();renderMapLegend();})
+    .catch(function(err){toast('Erreur : '+err.message);});
+});
+
+// Long press to move pin
+var longPressTimer=null;
+$('pins').addEventListener('touchstart',function(e){
+  var pin=e.target.closest('[data-pin]');if(!pin)return;
+  longPressTimer=setTimeout(function(){
+    movingId=pin.dataset.id;
+    pin.classList.add('moving');
+    toast('📍 Touchez le nouvel emplacement');
+    $('mhint').textContent='📍 Touchez le plan pour déplacer la punaise';
+  },600);
+},{passive:true});
+$('pins').addEventListener('touchend',function(){clearTimeout(longPressTimer);},{passive:true});
+$('mapwrap').addEventListener('click',function(e){
+  if(!movingId)return;
+  var img=$('mapimg');if(img.classList.contains('hidden'))return;
+  var rect=img.getBoundingClientRect();
+  var x=(e.clientX-rect.left)/rect.width;
+  var y=(e.clientY-rect.top)/rect.height;
+  x=Math.max(0,Math.min(1,x));y=Math.max(0,Math.min(1,y));
+  db.collection('extincteurs').doc(movingId).update({mapPos:{x:x,y:y},updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(function(){movingId=null;toast('Punaise déplacée ✅');renderPins();renderMapLegend();$('mhint').textContent='🔄 Appui long sur une punaise pour la déplacer';})
+    .catch(function(err){toast('Erreur : '+err.message);movingId=null;});
+});
+
+// Zoom buttons
+$('zoomin').addEventListener('click',function(){mapZoom=Math.min(5,mapZoom+0.3);applyZoom();});
+$('zoomout').addEventListener('click',function(){mapZoom=Math.max(1,mapZoom-0.3);applyZoom();});
+$('zoomreset').addEventListener('click',function(){mapZoom=1;mapOffX=0;mapOffY=0;applyZoom();});
+
+$('batsel').addEventListener('change',function(){
+  curBat=this.value;curEtage='';mapZoom=1;mapOffX=0;mapOffY=0;
+  var etages=mapStructure[curBat]||[];if(etages.length)curEtage=etages[0];
+  $('delbat').classList.toggle('hidden',!curBat);
+  $('toggle3d').style.display=curBat?'block':'none';
+  renderEtabs();renderMapCanvas();
+});
+$('addbat').addEventListener('click',function(){
+  var n=prompt('Nom du bâtiment (ex: Bat Admin, Bât. B…)');if(!n||!n.trim())return;
+  n=n.trim();if(mapStructure[n]){toast('Bâtiment déjà existant');return;}
+  mapStructure[n]=[];saveStruct();curBat=n;curEtage='';renderMapUI();toast('Bâtiment "'+n+'" créé ✅');
+});
+$('delbat').addEventListener('click',function(){
+  if(!curBat)return;
+  confirm2('Supprimer "'+curBat+'" et tous ses plans ?',function(){
+    (mapStructure[curBat]||[]).forEach(function(e){delPlan(curBat,e);});
+    delete mapStructure[curBat];saveStruct();curBat='';curEtage='';renderMapUI();toast('Bâtiment supprimé');
+  });
+});
+function promptAddEtage(){
+  if(!curBat)return;
+  var n=prompt("Nom de l'étage (ex: Étage -1, RDC, R+1…)");if(!n||!n.trim())return;
+  n=n.trim();if(!mapStructure[curBat])mapStructure[curBat]=[];
+  if(mapStructure[curBat].indexOf(n)>=0){toast('Étage déjà existant');return;}
+  mapStructure[curBat].push(n);saveStruct();curEtage=n;mapZoom=1;mapOffX=0;mapOffY=0;
+  renderEtabs();renderMapCanvas();toast('Étage "'+n+'" créé ✅');
+}
+function doDeleteEtage(){
+  if(!curBat||!curEtage)return;
+  confirm2('Supprimer "'+curEtage+'" et son plan ?',function(){
+    delPlan(curBat,curEtage);
+    mapStructure[curBat]=(mapStructure[curBat]||[]).filter(function(e){return e!==curEtage;});
+    saveStruct();curEtage=mapStructure[curBat].length?mapStructure[curBat][0]:'';
+    renderEtabs();renderMapCanvas();toast('Étage supprimé');
+  });
+}
+function handlePlanFile(file){
+  if(!file||!curBat||!curEtage)return;
+  // Compress image before storing
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var maxW=1200,maxH=1200;
+      var w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var dataUrl=canvas.toDataURL('image/jpeg',0.75);
+      toast('Upload en cours…');
+      savePlan(curBat,curEtage,dataUrl,function(){
+        mapZoom=1;mapOffX=0;mapOffY=0;renderMapCanvas();toast('Plan uploadé ✅');
+      });
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+$('planfile').addEventListener('change',function(){handlePlanFile(this.files[0]);this.value='';});
+$('planfilefirst').addEventListener('change',function(){handlePlanFile(this.files[0]);this.value='';});
+$('delplan').addEventListener('click',function(){confirm2('Supprimer le plan de cet étage ?',function(){delPlan(curBat,curEtage);renderMapCanvas();toast('Plan supprimé');});});
+$('cancplacing').addEventListener('click',cancelPlacing);
+function cancelPlacing(){placingId=null;$('placingtop').classList.add('hidden');$('mhint').textContent='🔄 Appui long sur une punaise pour la déplacer';}
+
+// ── 3D ISOMETRIC VIEW ─────────────────────────────────────
+var is3D = false;
+
+$('toggle3d').addEventListener('click', function(){
+  is3D = !is3D;
+  this.textContent = is3D ? '🗺️ 2D' : '🏢 3D';
+  $('view3d').classList.toggle('hidden', !is3D);
+  $('viewnormal').classList.toggle('hidden', is3D);
+  if(is3D) renderIsoView();
+});
+
+function renderIsoView(){
+  if(!curBat) return;
+  var etages = (mapStructure[curBat] || []).slice().reverse(); // top floor first
+  var stack = $('iso-stack');
+  stack.innerHTML = '';
+
+  if(!etages.length){
+    stack.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;padding:40px">Aucun étage créé</div>';
+    return;
+  }
+
+  etages.forEach(function(etage, idx){
+    // Connector between floors
+    if(idx > 0){
+      var conn = document.createElement('div');
+      conn.className = 'iso-connector';
+      stack.appendChild(conn);
+    }
+
+    var plan = loadPlan(curBat, etage);
+    var exts = allData.filter(function(e){ return e.batiment === curBat && e.etage === etage; });
+    var ok = exts.filter(function(e){ return e.status === 'ok'; }).length;
+    var ko = exts.filter(function(e){ return e.status === 'ko'; }).length;
+    var pend = exts.filter(function(e){ return !e.status || e.status === 'pending'; }).length;
+    var isActive = etage === curEtage;
+
+    var floor = document.createElement('div');
+    floor.className = 'iso-floor' + (isActive ? ' active-floor' : '');
+    floor.dataset.etage = etage;
+
+    var inner = document.createElement('div');
+    inner.className = 'iso-floor-inner' + (isActive ? ' active-fl' : '');
+
+    if(plan){
+      var img = document.createElement('img');
+      img.src = plan;
+      img.style.transform = 'perspective(400px) rotateX(20deg)';
+      img.style.transformOrigin = 'center bottom';
+      inner.appendChild(img);
+
+      // Pins overlay on 3D
+      var extsWithPos = exts.filter(function(e){ return e.mapPos; });
+      if(extsWithPos.length){
+        var pinOverlay = document.createElement('div');
+        pinOverlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+        extsWithPos.forEach(function(e){
+          var dot = document.createElement('div');
+          var em = e.status==='ok'?'🟢':e.status==='ko'?'🔴':'🟡';
+          dot.style.cssText = 'position:absolute;font-size:14px;transform:translate(-50%,-50%);left:'+(e.mapPos.x*100)+'%;top:'+(e.mapPos.y*100)+'%;';
+          dot.textContent = em;
+          pinOverlay.appendChild(dot);
+        });
+        inner.appendChild(pinOverlay);
+      }
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'iso-floor-placeholder';
+      ph.textContent = etage + ' — Pas de plan';
+      inner.appendChild(ph);
+    }
+
+    // Label
+    var label = document.createElement('div');
+    label.className = 'iso-floor-label' + (isActive ? ' active-fl' : '');
+    label.innerHTML = '<span>' + etage + (isActive ? ' ◀' : '') + '</span>';
+    if(plan) inner.appendChild(label);
+
+    // Stats badges
+    if(exts.length){
+      var stats = document.createElement('div');
+      stats.className = 'iso-floor-stats';
+      if(ok) stats.innerHTML += '<span style="background:rgba(99,153,34,0.85);color:#fff;padding:1px 5px;border-radius:10px">🟢'+ok+'</span>';
+      if(ko) stats.innerHTML += '<span style="background:rgba(226,75,74,0.85);color:#fff;padding:1px 5px;border-radius:10px">🔴'+ko+'</span>';
+      if(pend) stats.innerHTML += '<span style="background:rgba(239,159,39,0.85);color:#fff;padding:1px 5px;border-radius:10px">🟡'+pend+'</span>';
+      inner.appendChild(stats);
+    }
+
+    floor.appendChild(inner);
+    stack.appendChild(floor);
+
+    // Click to navigate to floor with elevator animation
+    floor.addEventListener('click', function(){
+      var targetEtage = this.dataset.etage;
+      if(targetEtage === curEtage) return;
+      
+      // Elevator exit animation on current normal view
+      var wrap = $('mapwrap');
+      wrap.classList.add('elevator-exit');
+      
+      setTimeout(function(){
+        wrap.classList.remove('elevator-exit');
+        curEtage = targetEtage;
+        mapZoom = 1; mapOffX = 0; mapOffY = 0;
+        
+        // Switch to normal view with enter animation
+        is3D = false;
+        $('toggle3d').textContent = '🏢 3D';
+        $('view3d').classList.add('hidden');
+        $('viewnormal').classList.remove('hidden');
+        
+        renderEtabs();
+        renderMapCanvas();
+        
+        wrap.classList.add('elevator-enter');
+        setTimeout(function(){ wrap.classList.remove('elevator-enter'); }, 400);
+      }, 280);
+    });
+  });
+}
+
+
+// ── GPS ───────────────────────────────────────────────────
+$('gpsbtn').addEventListener('click',function(){
+  if(!navigator.geolocation){toast('GPS non disponible');return;}
+  var btn=this;btn.textContent='📡 Localisation…';
+  navigator.geolocation.getCurrentPosition(function(pos){
+    curGPS={lat:pos.coords.latitude.toFixed(6),lng:pos.coords.longitude.toFixed(6)};
+    btn.textContent='✅ GPS capturé';btn.className='gpsbtn got';
+    $('gpsres').textContent=curGPS.lat+', '+curGPS.lng;$('gpsres').classList.remove('hidden');
+  },function(){btn.textContent='📡 Capturer ma position GPS';toast('Erreur GPS');},{enableHighAccuracy:true});
+});
+
+// ── MODAL ─────────────────────────────────────────────────
+$('fab').addEventListener('click',function(){openModal(null);});
+$('modalclose').addEventListener('click',closeModal);
+$('extoverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+function openModal(id){
+  editingId=id;
+  populateSel('f-type','types',DEFAULT_TYPES,'');
+  populateSel('f-cap','capacites',DEFAULT_CAPS,'');
+  if(id){
+    var e=allData.find(function(x){return x.id===id;});if(!e)return;
+    $('modaltitle').textContent='Extincteur '+(e.num||'');
+    $('f-num').value=e.num||'';$('f-code').value=e.code||'';
+    populateSel('f-type','types',DEFAULT_TYPES,e.type||'');
+    $('f-bat').value=e.batiment||'';$('f-eta').value=e.etage||'';
+    $('f-loc').value=e.loc||'';$('f-fab').value=e.fab||'';$('f-verif').value=e.verif||'';
+    populateSel('f-cap','capacites',DEFAULT_CAPS,e.capacite||'');
+    $('f-ctrl').value=e.controller||'';$('f-notes').value=e.notes||'';
+    curStatus=e.status||'pending';curGPS=e.gps||null;
+    if(e.gps){$('gpsbtn').textContent='✅ GPS enregistré';$('gpsbtn').className='gpsbtn got';$('gpsres').textContent=e.gps.lat+', '+e.gps.lng;$('gpsres').classList.remove('hidden');}
+    else{$('gpsbtn').textContent='📡 Capturer ma position GPS';$('gpsbtn').className='gpsbtn';$('gpsres').classList.add('hidden');}
+    $('placebtn').textContent=e.mapPos?'✅ Déjà placé sur le plan':'📌 Placer sur le plan';
+    $('placebtn').className='placebtn'+(e.mapPos?' placed':'');
+    $('delbtn').classList.remove('hidden');
+    if(e.history&&e.history.length){
+      $('histsec').classList.remove('hidden');
+      $('histlist').innerHTML=[].concat(e.history).reverse().slice(0,8).map(function(h){return'<div class="hitem"><b>'+(h.who||'?')+'</b> — '+(h.action||'')+' <span class="htime">'+fmtDate(h.at)+'</span></div>';}).join('');
+    }else{$('histsec').classList.add('hidden');}
+  }else{
+    $('modaltitle').textContent='Nouvel extincteur';
+    ['f-num','f-code','f-bat','f-eta','f-loc','f-fab','f-verif','f-ctrl','f-notes'].forEach(function(i){$(i).value='';});
+    curStatus='pending';curGPS=null;
+    $('gpsbtn').textContent='📡 Capturer ma position GPS';$('gpsbtn').className='gpsbtn';
+    $('gpsres').classList.add('hidden');
+    $('placebtn').textContent='📌 Placer sur le plan';$('placebtn').className='placebtn';
+    $('delbtn').classList.add('hidden');$('histsec').classList.add('hidden');
+  }
+  document.querySelectorAll('.sopt').forEach(function(o){o.classList.toggle('sel',o.dataset.v===curStatus);});
+  $('extoverlay').classList.add('open');
+}
+function closeModal(){$('extoverlay').classList.remove('open');editingId=null;}
+document.querySelectorAll('.sopt').forEach(function(o){o.addEventListener('click',function(){curStatus=this.dataset.v;document.querySelectorAll('.sopt').forEach(function(x){x.classList.remove('sel');});this.classList.add('sel');});});
+$('placebtn').addEventListener('click',function(){
+  if(!editingId){toast("Enregistrez d'abord l'extincteur");return;}
+  var e=allData.find(function(x){return x.id===editingId;});if(!e)return;
+  closeModal();
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('[data-tab]').forEach(function(t){if(t.dataset.tab==='map')t.classList.add('active');});
+  ['list','dash','alerts'].forEach(function(t){$('tab-'+t).classList.add('hidden');});
+  $('tab-map').classList.remove('hidden');
+  placingId=editingId;
+  if(e.batiment&&mapStructure[e.batiment]){curBat=e.batiment;if(e.etage&&mapStructure[e.batiment].indexOf(e.etage)>=0)curEtage=e.etage;}
+  renderMapUI();$('placingtop').classList.remove('hidden');$('placingname').textContent=e.num||'?';
+});
+$('savebtn').addEventListener('click',function(){
+  var num=$('f-num').value.trim();if(!num){toast('Le numéro est requis');return;}
+  var oldExt=editingId?allData.find(function(x){return x.id===editingId;}):null;
+  var hist={who:$('f-ctrl').value.trim()||'Inconnu',action:editingId?(oldExt&&oldExt.status!==curStatus?'Statut → '+statusLabel(curStatus):'Modifié'):'Créé',at:new Date().toISOString()};
+  var data={num:num,code:$('f-code').value.trim(),type:$('f-type').value,batiment:$('f-bat').value.trim(),etage:$('f-eta').value.trim(),loc:$('f-loc').value.trim(),fab:$('f-fab').value,verif:$('f-verif').value,capacite:$('f-cap').value,status:curStatus,notes:$('f-notes').value.trim(),controller:$('f-ctrl').value.trim(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  if(curGPS)data.gps=curGPS;
+  if(editingId){
+    db.collection('extincteurs').doc(editingId).update(Object.assign({},data,{history:firebase.firestore.FieldValue.arrayUnion(hist)}))
+      .then(function(){closeModal();toast('Mis à jour ✅');}).catch(function(err){toast('Erreur : '+err.message);});
+  }else{
+    db.collection('extincteurs').add(Object.assign({},data,{history:[hist],createdAt:firebase.firestore.FieldValue.serverTimestamp()}))
+      .then(function(){closeModal();toast('Ajouté ✅');}).catch(function(err){toast('Erreur : '+err.message);});
+  }
+});
+$('delbtn').addEventListener('click',function(){
+  if(!editingId)return;
+  confirm2('Supprimer cet extincteur ?',function(){
+    db.collection('extincteurs').doc(editingId).delete()
+      .then(function(){closeModal();toast('Supprimé');}).catch(function(err){toast('Erreur : '+err.message);});
+  });
+});
+
+// ── CONFIRM ───────────────────────────────────────────────
+$('confirmyes').addEventListener('click',function(){$('confirmoverlay').classList.remove('open');if(confirmCb){confirmCb();confirmCb=null;}});
+$('confirmno').addEventListener('click',function(){$('confirmoverlay').classList.remove('open');confirmCb=null;});
+$('confirmoverlay').addEventListener('click',function(e){if(e.target===this){$('confirmoverlay').classList.remove('open');confirmCb=null;}});
+
+// ── LIST MANAGER ──────────────────────────────────────────
+$('mgrtypes').addEventListener('click',function(){openMgr('types');});
+$('mgrcaps').addEventListener('click',function(){openMgr('capacites');});
+$('mgrclose').addEventListener('click',function(){$('mgroverlay').classList.remove('open');});
+$('mgrdonebtn').addEventListener('click',function(){$('mgroverlay').classList.remove('open');});
+$('mgroverlay').addEventListener('click',function(e){if(e.target===this)$('mgroverlay').classList.remove('open');});
+function openMgr(key){mgrKey=key;$('mgrtitle').textContent=key==='types'?"Types d'extincteur":'Capacités';$('mgrinput').placeholder=key==='types'?'ex: Eau avec mouillant':'ex: 4 kg / 4 L';$('mgrinput').value='';renderMgrItems();$('mgroverlay').classList.add('open');}
+function renderMgrItems(){var items=getList(mgrKey,mgrKey==='types'?DEFAULT_TYPES:DEFAULT_CAPS);$('mgritems').innerHTML=items.length?items.map(function(item,i){return'<div class="mgritem"><span>'+item+'</span><button data-i="'+i+'">×</button></div>';}).join(''):'<div style="text-align:center;color:#aaa;font-size:13px;padding:8px">Aucun élément</div>';}
+$('mgritems').addEventListener('click',function(e){var btn=e.target.closest('button[data-i]');if(!btn)return;var items=getList(mgrKey,mgrKey==='types'?DEFAULT_TYPES:DEFAULT_CAPS);items.splice(parseInt(btn.dataset.i),1);saveList(mgrKey,items);renderMgrItems();populateSel(mgrKey==='types'?'f-type':'f-cap',mgrKey,mgrKey==='types'?DEFAULT_TYPES:DEFAULT_CAPS,'');toast('Supprimé');});
+$('mgraddbtn').addEventListener('click',addMgrItem);
+$('mgrinput').addEventListener('keydown',function(e){if(e.key==='Enter')addMgrItem();});
+function addMgrItem(){var val=$('mgrinput').value.trim();if(!val)return;var def=mgrKey==='types'?DEFAULT_TYPES:DEFAULT_CAPS;var items=getList(mgrKey,def);if(items.indexOf(val)>=0){toast('Existe déjà');return;}items.push(val);saveList(mgrKey,items);$('mgrinput').value='';renderMgrItems();populateSel(mgrKey==='types'?'f-type':'f-cap',mgrKey,def,val);toast('Ajouté ✅');}
+
+// ── PDF ───────────────────────────────────────────────────
+$('btnpdf').addEventListener('click',function(){$('pdfoverlay').classList.add('open');});
+$('pdfclose').addEventListener('click',function(){$('pdfoverlay').classList.remove('open');});
+$('pdfoverlay').addEventListener('click',function(e){if(e.target===this)$('pdfoverlay').classList.remove('open');});
+$('pdfgenbtn').addEventListener('click',function(){
+  var site=$('pdf-site').value||'Engie';
+  var sign=$('pdf-sign').value||'';
+  var onlyKo=$('pdf-ko').checked;
+  var onlyExp=$('pdf-exp').checked;
+  var data=allData.filter(function(e){
+    if(onlyKo)return e.status==='ko';
+    if(onlyExp)return expiring(e.verif)||expired(e.verif);
+    return true;
+  });
+  var now=new Date().toLocaleDateString('fr-FR');
+  var ok=allData.filter(function(e){return e.status==='ok';}).length;
+  var ko=allData.filter(function(e){return e.status==='ko';}).length;
+  var pend=allData.filter(function(e){return!e.status||e.status==='pending';}).length;
+  var rows=data.map(function(e){return'<tr><td>'+(e.num||'')+'</td><td>'+(e.code||'')+'</td><td>'+(e.type||'')+'</td><td>'+(e.batiment||'')+' '+(e.etage||'')+'</td><td>'+(e.loc||'')+'</td><td>'+fmtMonth(e.verif)+'</td><td style="color:'+(e.status==='ok'?'#3b6d11':e.status==='ko'?'#a32d2d':'#854f0b')+';font-weight:600">'+statusLabel(e.status)+'</td><td>'+(e.controller||'')+'</td><td>'+(e.notes||'')+'</td></tr>';}).join('');
+  var html='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Rapport extincteurs</title>'+
+  '<style>body{font-family:Arial,sans-serif;padding:28px;font-size:12px;color:#1a1a1a}'+
+  '.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a1a1a;padding-bottom:12px;margin-bottom:18px}'+
+  '.header h1{font-size:18px;margin:0}.header .logo{font-size:22px;font-weight:800;color:#e24b4a}'+
+  '.meta{color:#666;margin-bottom:16px;font-size:12px}'+
+  '.stats{display:flex;gap:12px;margin-bottom:20px}'+
+  '.si{padding:8px 14px;border-radius:6px;text-align:center}.si .n{font-size:20px;font-weight:700}.ok{background:#eaf3de}.ko{background:#fcebeb}.pe{background:#faeeda}'+
+  'table{width:100%;border-collapse:collapse;font-size:11px}'+
+  'th{background:#f0f0ee;padding:6px 8px;text-align:left;font-weight:600;border:1px solid #ddd}'+
+  'td{padding:5px 8px;border:1px solid #e8e8e8}tr:nth-child(even){background:#fafaf8}'+
+  '.sign{margin-top:40px;display:flex;justify-content:flex-end}'+
+  '.signbox{border-top:1px solid #888;width:200px;text-align:center;padding-top:8px;font-size:11px;color:#666}'+
+  '@media print{body{padding:12px}}</style></head><body>'+
+  '<div class="header"><div><div class="logo">🔴 ENGIE</div><h1>Rapport de contrôle extincteurs</h1></div><div style="text-align:right;color:#666;font-size:11px"><div>'+site+'</div><div>'+now+'</div></div></div>'+
+  '<div class="meta">Total : <strong>'+allData.length+'</strong> extincteurs · Rapport : <strong>'+data.length+'</strong> enregistrements</div>'+
+  '<div class="stats"><div class="si ok"><div class="n">'+ok+'</div>Conformes</div><div class="si ko"><div class="n">'+ko+'</div>Non-conf.</div><div class="si pe"><div class="n">'+pend+'</div>À vérifier</div></div>'+
+  '<table><thead><tr><th>N°</th><th>Code</th><th>Type</th><th>Bât./Étage</th><th>Emplacement</th><th>Vérif.</th><th>Statut</th><th>Contrôleur</th><th>Observations</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+  (sign?'<div class="sign"><div class="signbox">'+sign+'<br><br>Signature</div></div>':'')+
+  '<script>window.print()<\/script></body></html>';
+  $('pdfoverlay').classList.remove('open');
+  var w=window.open('','_blank');w.document.write(html);w.document.close();
+});
+
+// ── CSV ───────────────────────────────────────────────────
+$('btncsv').addEventListener('click',function(){
+  var cols=['num','code','type','batiment','etage','loc','fab','verif','capacite','status','notes','controller'];
+  var heads=['Numéro','Code','Type','Bâtiment','Étage','Emplacement','Fabrication','Prochaine vérif.','Capacité','Statut','Observations','Contrôleur'];
+  var rows=allData.map(function(e){return cols.map(function(c){return'"'+((e[c]||'').toString().replace(/"/g,'""'))+'"';}).join(',');});
+  var csv=[heads.join(',')].concat(rows).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='extincteurs_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+  toast('CSV exporté');
+});
+</script>
+</body>
+</html>
